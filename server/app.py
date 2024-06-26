@@ -29,10 +29,10 @@ def messages():
         db.session.commit()
         return new_msg.to_dict(), 201
 
-@app.route('/messages/<int:id>', methods=['PATCH'])
+@app.route('/messages/<int:id>', methods=['PATCH', 'DELETE'])
 def messages_by_id(id):
+    msg = Message.query.filter(Message.id == id).first()
     if request.method == 'PATCH':
-        msg = Message.query.filter(Message.id == id).first()
 
         if not msg:
             return {'error': 'message not found'}
@@ -45,6 +45,10 @@ def messages_by_id(id):
         db.session.commit()
 
         return msg.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(msg)
+        db.session.commit()
+        return {}, 204
 
 if __name__ == '__main__':
     app.run(port=5555)
